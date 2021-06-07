@@ -6,13 +6,16 @@ namespace Interesting.Mediator.DataAccess
 {
     public class CustomerRepository : ICustomerRepository
     {
-        public Task<Result> CreateCustomerAsync(CreateCustomerCommand command)
+        public async Task<Result> CreateCustomerAsync(CreateCustomerCommand command)
         {
-            return Task.FromResult(Result.Success());
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            return Result.Success();
         }
 
-        public Task<Result<Customer>> GetCustomerByEmailAsync(string email)
+        public async Task<Result<Customer>> GetCustomerByEmailAsync(string email)
         {
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            
             var customer = new Customer
             {
                 Id = Guid.NewGuid().ToString("N"),
@@ -20,8 +23,8 @@ namespace Interesting.Mediator.DataAccess
                 Address = "Melbourne",
                 Email = "cheranga@gmail.com"
             };
-            
-            return Task.FromResult(Result<Customer>.Success(customer));
+
+            return Result<Customer>.Success(customer);
         }
     }
 }

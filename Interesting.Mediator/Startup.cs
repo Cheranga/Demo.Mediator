@@ -1,6 +1,8 @@
 using FluentValidation;
+using Interesting.Mediator.Core;
 using Interesting.Mediator.DataAccess;
 using Interesting.Mediator.Services;
+using Interesting.Mediator.Services.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -37,6 +39,9 @@ namespace Interesting.Mediator
             };
 
             services.AddMediatR(assemblies);
+
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LogPerformanceBehaviour<,>));
+            services.AddTransient<IPipelineBehavior<GetCustomerByEmailRequest, Result<Customer>>, ValidationBehaviourWithResult<GetCustomerByEmailRequest, Customer>>();
         }
 
         private void RegisterServices(IServiceCollection services)
