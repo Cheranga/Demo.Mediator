@@ -42,6 +42,8 @@ namespace Interesting.Mediator
 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LogPerformanceBehaviour<,>));
             services.AddTransient<IPipelineBehavior<GetCustomerByEmailRequest, Result<Customer>>, ValidationBehaviourWithResult<GetCustomerByEmailRequest, Customer>>();
+            services.AddTransient<IPipelineBehavior<UpdateCustomerRequest, Result<Customer>>, ValidationBehaviourWithResult<UpdateCustomerRequest, Customer>>();
+            
             services.AddTransient<IPipelineBehavior<CreateCustomerRequest, Result>, ValidationBehaviour<CreateCustomerRequest, Result>>();
         }
 
@@ -49,6 +51,8 @@ namespace Interesting.Mediator
         {
             services.AddSingleton<ICustomerService, CustomerService>();
             services.AddSingleton<ICustomerRepository, CustomerRepository>();
+            services.AddSingleton<IAuth0Service, Auth0Service>();
+            services.AddSingleton<IEDirectoryRepository, EDirectoryRepository>();
         }
 
         private void RegisterValidators(IServiceCollection services)

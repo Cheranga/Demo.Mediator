@@ -11,6 +11,12 @@ namespace Interesting.Mediator.DataAccess
             await Task.Delay(TimeSpan.FromSeconds(2));
             return Result.Success();
         }
+        
+        public async Task<Result> UpdateCustomerAsync(UpdateCustomerCommand command)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            return Result.Success();
+        }
 
         public async Task<Result<Customer>> GetCustomerByEmailAsync(string email)
         {

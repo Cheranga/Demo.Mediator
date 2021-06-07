@@ -34,8 +34,24 @@ namespace Interesting.Mediator.Controllers
                 StatusCode = (int) (HttpStatusCode.InternalServerError)
             };
         }
-
-        [HttpPost]
+        
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateCustomerAsync([FromBody] UpdateCustomerRequest request)
+        {
+            var operation = await mediator.Send(request);
+            
+            if (operation.Status)
+            {
+                return Ok();
+            }
+            
+            return new ObjectResult(operation)
+            {
+                StatusCode = (int) (HttpStatusCode.InternalServerError)
+            };
+        }
+        
+        [HttpPost("create")]
         public async Task<IActionResult> CreateCustomerAsync([FromBody] CreateCustomerRequest request)
         {
             var operation = await mediator.Send(request);
