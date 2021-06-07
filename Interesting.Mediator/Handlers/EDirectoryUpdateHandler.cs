@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Interesting.Mediator.Handlers
 {
-    public class EDirectoryUpdateHandler : INotificationHandler<CustomerUpdatedEvent>
+    public class EDirectoryUpdateHandler : INotificationHandler<CustomerEmailUpdatedEvent>
     {
         private readonly IEDirectoryRepository repository;
         private readonly ILogger<EDirectoryUpdateHandler> logger;
@@ -21,26 +21,27 @@ namespace Interesting.Mediator.Handlers
             this.logger = logger;
         }
 
-        public async Task Handle(CustomerUpdatedEvent notification, CancellationToken cancellationToken)
+        public async Task Handle(CustomerEmailUpdatedEvent notification, CancellationToken cancellationToken)
         {
             //
             // Simulating some eDirectory related work
             //
-            var nameParts = notification.Name?.Split(new[] {" "}, StringSplitOptions.RemoveEmptyEntries);
-            var firstName = nameParts?.FirstOrDefault();
-            var lastName = nameParts?.Skip(1)?.FirstOrDefault();
+            // var nameParts = notification.Name?.Split(new[] {" "}, StringSplitOptions.RemoveEmptyEntries);
+            // var firstName = nameParts?.FirstOrDefault();
+            // var lastName = nameParts?.Skip(1)?.FirstOrDefault();
 
             var updateCommand = new UpdateEDirectoryUserCommand
             {
-                Uid = notification.Id,
-                Email = notification.Email,
-                FirstName = firstName,
-                LastName = lastName,
-                Address = notification.Address
+                Email = notification.NewEmail
+                // Uid = notification.Id,
+                // Email = notification.Email,
+                // FirstName = firstName,
+                // LastName = lastName,
+                // Address = notification.Address
             };
 
-            logger.LogError("eDirectory user update handling error!");
-            throw new EDirectoryUserUpdateException(updateCommand);
+            // logger.LogError("eDirectory user update handling error!");
+            // throw new EDirectoryUserUpdateException(updateCommand);
 
             logger.LogInformation("EDirectory updates are done!");
             await repository.UpdateUserAsync(updateCommand);

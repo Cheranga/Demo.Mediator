@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Interesting.Mediator.Core;
 using Interesting.Mediator.DataAccess;
 using Interesting.Mediator.Exceptions;
+using Interesting.Mediator.Publisher;
 using Interesting.Mediator.Services.Messages;
 using Interesting.Mediator.Services.Requests;
 using MediatR;
@@ -15,12 +16,14 @@ namespace Interesting.Mediator.Handlers
     {
         private readonly ICustomerRepository customerRepository;
         private readonly IMediator mediator;
+        private readonly IAsyncPublisher asyncPublisher;
         private readonly ILogger<UpdateCustomerRequestHandler> logger;
 
-        public UpdateCustomerRequestHandler(ICustomerRepository customerRepository, IMediator mediator, ILogger<UpdateCustomerRequestHandler> logger)
+        public UpdateCustomerRequestHandler(ICustomerRepository customerRepository, IMediator mediator, IAsyncPublisher asyncPublisher, ILogger<UpdateCustomerRequestHandler> logger)
         {
             this.customerRepository = customerRepository;
             this.mediator = mediator;
+            this.asyncPublisher = asyncPublisher;
             this.logger = logger;
         }
         
@@ -45,7 +48,14 @@ namespace Interesting.Mediator.Handlers
             }
 
             // TODO: Discuss 
-            return await GetCustomerAsync(request);
+            // return await GetCustomerAsync(request);
+            return Result<Customer>.Success(new Customer
+            {
+                Id = request.Id,
+                Address = request.Address,
+                Email = request.Email,
+                Name = request.Name
+            });
         }
 
         private async Task<Result<Customer>> GetCustomerAsync(UpdateCustomerRequest request)
@@ -80,6 +90,7 @@ namespace Interesting.Mediator.Handlers
 
         private async Task<Result> PublishEventsAsync(UpdateCustomerRequest request, Customer customer, CancellationToken cancellationToken)
         {
+            // TODO: In here check if the email has been updated, this will be better rather than the event handlers checking it by themselves.
             var customerEmailUpdatedEvent = new CustomerEmailUpdatedEvent
             {
                 CustomerId = request.Id,
@@ -96,29 +107,33 @@ namespace Interesting.Mediator.Handlers
                 Name = request.Name
             };
 
+            await mediator.Publish(customerEmailUpdatedEvent, cancellationToken);
+            await asyncPublisher.Publish(customerUpdatedEvent, PublishStrategy.ParallelNoWait, cancellationToken);
+            return Result.Success();
+
             // await Task.WhenAll(mediator.Publish(customerEmailUpdatedEvent, cancellationToken), mediator.Publish(customerUpdatedEvent, cancellationToken));
             // return Result.Success();
-            
-            try
-            {
-                await Task.WhenAll(mediator.Publish(customerEmailUpdatedEvent, cancellationToken), mediator.Publish(customerUpdatedEvent, cancellationToken));
-                return Result.Success();
-            }
-            catch (Exception exception)
-            {
-                logger.LogError(exception, "Error occurred when publishing customer updated events");
-            
-                if (exception is Auth0UpdateUserException)
-                {
-                    return Result.Failure("AUTH0_USER_UPDATE_ERROR", "error occurred when updating the user");
-                }
-                if (exception is EDirectoryUserUpdateException)
-                {
-                    return Result.Failure("EDIRECTORY_USER_UPDATE_ERROR", "error occurred when updating the user");
-                }
-                
-                return Result.Failure("EVENT_CUSTOMER_UPDATES", "Error occurred when publishing customer updated events");
-            }
+
+            // try
+            // {
+            //     await Task.WhenAll(mediator.Publish(customerEmailUpdatedEvent, cancellationToken), mediator.Publish(customerUpdatedEvent, cancellationToken));
+            //     return Result.Success();
+            // }
+            // catch (Exception exception)
+            // {
+            //     logger.LogError(exception, "Error occurred when publishing customer updated events");
+            //
+            //     if (exception is Auth0UpdateUserException)
+            //     {
+            //         return Result.Failure("AUTH0_USER_UPDATE_ERROR", "error occurred when updating the user");
+            //     }
+            //     if (exception is EDirectoryUserUpdateException)
+            //     {
+            //         return Result.Failure("EDIRECTORY_USER_UPDATE_ERROR", "error occurred when updating the user");
+            //     }
+            //     
+            //     return Result.Failure("EVENT_CUSTOMER_UPDATES", "Error occurred when publishing customer updated events");
+            // }
         }
     }
 }

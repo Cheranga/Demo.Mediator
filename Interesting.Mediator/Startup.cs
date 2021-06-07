@@ -1,6 +1,7 @@
 using FluentValidation;
 using Interesting.Mediator.Core;
 using Interesting.Mediator.DataAccess;
+using Interesting.Mediator.Publisher;
 using Interesting.Mediator.Services;
 using Interesting.Mediator.Services.Requests;
 using MediatR;
@@ -47,8 +48,8 @@ namespace Interesting.Mediator
             
             services.AddTransient<IPipelineBehavior<CreateCustomerRequest, Result>, ValidationBehaviour<CreateCustomerRequest, Result>>();
 
-            // services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestExceptionProcessorBehavior<,>));
-
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestExceptionProcessorBehavior<,>));
+            services.AddSingleton<IAsyncPublisher, AsyncPublisher>();
         }
 
         private void RegisterServices(IServiceCollection services)
