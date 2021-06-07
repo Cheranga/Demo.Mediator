@@ -1,8 +1,9 @@
 using System.Net;
 using System.Threading.Tasks;
 using FluentValidation;
-using Interesting.Mediator.Requests;
 using Interesting.Mediator.Services;
+using Interesting.Mediator.Services.Requests;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Interesting.Mediator.Controllers
@@ -11,29 +12,18 @@ namespace Interesting.Mediator.Controllers
     [Route("[controller]")]
     public class CustomersController : ControllerBase
     {
-        private readonly IValidator<CreateCustomerRequest> createCustomerRequestValidator;
-        private readonly ICustomerService customerService;
-        private readonly IValidator<GetCustomerByEmailRequest> getCustomerByEmailRequestValidator;
+        private readonly IMediator mediator;
 
-        public CustomersController(ICustomerService customerService, IValidator<CreateCustomerRequest> createCustomerRequestValidator,
-            IValidator<GetCustomerByEmailRequest> getCustomerByEmailRequestValidator)
+        public CustomersController(IMediator mediator)
         {
-            this.customerService = customerService;
-            this.createCustomerRequestValidator = createCustomerRequestValidator;
-            this.getCustomerByEmailRequestValidator = getCustomerByEmailRequestValidator;
+            this.mediator = mediator;
         }
 
         [HttpGet("{email}")]
         public async Task<IActionResult> GetCustomerAsync([FromRoute] GetCustomerByEmailRequest request)
         {
-            var validationResult = await getCustomerByEmailRequestValidator.ValidateAsync(request);
-            if (!validationResult.IsValid)
-            {
-                // TODO: Return an error object
-                return new BadRequestResult();
-            }
-
-            var operation = await customerService.GetCustomerAsync(request);
+            var operation = await mediator.Send(request);
+            
             if (operation.Status)
             {
                 return Ok(operation.Data);
@@ -48,19 +38,13 @@ namespace Interesting.Mediator.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCustomerAsync([FromBody] CreateCustomerRequest request)
         {
-            var validationResult = await createCustomerRequestValidator.ValidateAsync(request);
-            if (!validationResult.IsValid)
-            {
-                // TODO: Return an error object
-                return new BadRequestResult();
-            }
+            var operation = await mediator.Send(request);
             
-            var operation = await customerService.CreateCustomerAsync(request);
             if (operation.Status)
             {
                 return Ok();
             }
-
+            
             return new ObjectResult(operation)
             {
                 StatusCode = (int) (HttpStatusCode.InternalServerError)

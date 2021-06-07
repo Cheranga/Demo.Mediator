@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Interesting.Mediator.Core;
 using Interesting.Mediator.DataAccess;
-using Interesting.Mediator.Requests;
+using Interesting.Mediator.Services.Requests;
 
 namespace Interesting.Mediator.Services
 {

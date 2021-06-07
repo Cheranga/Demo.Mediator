@@ -1,5 +1,5 @@
 using FluentValidation;
-using Interesting.Mediator.Requests;
+using Interesting.Mediator.Services.Requests;
 
 namespace Interesting.Mediator.Validators
 {

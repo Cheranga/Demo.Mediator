@@ -1,6 +1,7 @@
 using FluentValidation;
 using Interesting.Mediator.DataAccess;
 using Interesting.Mediator.Services;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +26,17 @@ namespace Interesting.Mediator
 
             RegisterValidators(services);
             RegisterServices(services);
+            RegisterMediators(services);
+        }
+
+        private void RegisterMediators(IServiceCollection services)
+        {
+            var assemblies = new[]
+            {
+                typeof(Startup).Assembly
+            };
+
+            services.AddMediatR(assemblies);
         }
 
         private void RegisterServices(IServiceCollection services)

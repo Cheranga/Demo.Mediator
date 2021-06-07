@@ -1,12 +1,11 @@
 using Interesting.Mediator.Core;
+using Interesting.Mediator.DataAccess;
 using MediatR;
 
 namespace Interesting.Mediator.Services.Requests
 {
-    public class CreateCustomerRequest : IRequest<Result>
+    public class GetCustomerByEmailRequest : IRequest<Result<Customer>>
     {
         public string Email { get; set; }
-        public string Name { get; set; }
-        public string Address { get; set; }
     }
 }
