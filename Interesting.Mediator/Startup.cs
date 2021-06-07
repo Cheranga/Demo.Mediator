@@ -42,6 +42,7 @@ namespace Interesting.Mediator
 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LogPerformanceBehaviour<,>));
             services.AddTransient<IPipelineBehavior<GetCustomerByEmailRequest, Result<Customer>>, ValidationBehaviourWithResult<GetCustomerByEmailRequest, Customer>>();
+            services.AddTransient<IPipelineBehavior<CreateCustomerRequest, Result>, ValidationBehaviour<CreateCustomerRequest, Result>>();
         }
 
         private void RegisterServices(IServiceCollection services)
