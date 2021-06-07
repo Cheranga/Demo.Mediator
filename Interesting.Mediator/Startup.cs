@@ -4,6 +4,7 @@ using Interesting.Mediator.DataAccess;
 using Interesting.Mediator.Services;
 using Interesting.Mediator.Services.Requests;
 using MediatR;
+using MediatR.Pipeline;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -45,6 +46,9 @@ namespace Interesting.Mediator
             services.AddTransient<IPipelineBehavior<UpdateCustomerRequest, Result<Customer>>, ValidationBehaviourWithResult<UpdateCustomerRequest, Customer>>();
             
             services.AddTransient<IPipelineBehavior<CreateCustomerRequest, Result>, ValidationBehaviour<CreateCustomerRequest, Result>>();
+
+            // services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestExceptionProcessorBehavior<,>));
+
         }
 
         private void RegisterServices(IServiceCollection services)

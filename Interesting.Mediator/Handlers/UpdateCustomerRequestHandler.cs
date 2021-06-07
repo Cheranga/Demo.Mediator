@@ -26,7 +26,6 @@ namespace Interesting.Mediator.Handlers
         
         public async Task<Result<Customer>> Handle(UpdateCustomerRequest request, CancellationToken cancellationToken)
         {
-            // TODO: Discuss about the validator implementation and the pipeline for this update
             var getCustomerOperation = await GetCustomerAsync(request);
             if (!getCustomerOperation.Status)
             {
@@ -97,6 +96,9 @@ namespace Interesting.Mediator.Handlers
                 Name = request.Name
             };
 
+            // await Task.WhenAll(mediator.Publish(customerEmailUpdatedEvent, cancellationToken), mediator.Publish(customerUpdatedEvent, cancellationToken));
+            // return Result.Success();
+            
             try
             {
                 await Task.WhenAll(mediator.Publish(customerEmailUpdatedEvent, cancellationToken), mediator.Publish(customerUpdatedEvent, cancellationToken));
@@ -105,7 +107,7 @@ namespace Interesting.Mediator.Handlers
             catch (Exception exception)
             {
                 logger.LogError(exception, "Error occurred when publishing customer updated events");
-
+            
                 if (exception is Auth0UpdateUserException)
                 {
                     return Result.Failure("AUTH0_USER_UPDATE_ERROR", "error occurred when updating the user");
