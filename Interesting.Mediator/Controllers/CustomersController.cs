@@ -1,7 +1,6 @@
 using System.Net;
 using System.Threading.Tasks;
 using FluentValidation;
-using Interesting.Mediator.DTO.Requests;
 using Interesting.Mediator.Requests;
 using Interesting.Mediator.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -12,38 +11,47 @@ namespace Interesting.Mediator.Controllers
     [Route("[controller]")]
     public class CustomersController : ControllerBase
     {
+        private readonly IValidator<CreateCustomerRequest> createCustomerRequestValidator;
         private readonly ICustomerService customerService;
-        private readonly IValidator<CreateCustomerRequest> validator;
+        private readonly IValidator<GetCustomerByEmailRequest> getCustomerByEmailRequestValidator;
 
-        public CustomersController(ICustomerService customerService, IValidator<CreateCustomerRequest> validator)
+        public CustomersController(ICustomerService customerService, IValidator<CreateCustomerRequest> createCustomerRequestValidator,
+            IValidator<GetCustomerByEmailRequest> getCustomerByEmailRequestValidator)
         {
             this.customerService = customerService;
-            this.validator = validator;
+            this.createCustomerRequestValidator = createCustomerRequestValidator;
+            this.getCustomerByEmailRequestValidator = getCustomerByEmailRequestValidator;
         }
-        
-        [HttpPost]
-        public async Task<IActionResult> CreateCustomerAsync([FromBody] CreateCustomerRequestDto request)
-        {
-            // TODO: Create the create customer request (service)
-            var createCustomerRequest = new CreateCustomerRequest
-            {
 
-            };
-            
-            var validationResult = await validator.ValidateAsync(createCustomerRequest);
+        [HttpGet("{email}")]
+        public async Task<IActionResult> GetCustomerAsync([FromRoute] GetCustomerByEmailRequest request)
+        {
+            var validationResult = await getCustomerByEmailRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
-            {
                 // TODO: Return an error object
                 return new BadRequestResult();
-            }
 
-            var operation = await customerService.CreateCustomerAsync(createCustomerRequest);
-            if (operation)
+            var customer = await customerService.GetCustomerAsync(request);
+            if (customer != null)
             {
-                return Ok();
+                return Ok(customer);
             }
 
-            return new StatusCodeResult((int) (HttpStatusCode.InternalServerError));
+            return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateCustomerAsync([FromBody] CreateCustomerRequest request)
+        {
+            var validationResult = await createCustomerRequestValidator.ValidateAsync(request);
+            if (!validationResult.IsValid)
+                // TODO: Return an error object
+                return new BadRequestResult();
+
+            var operation = await customerService.CreateCustomerAsync(request);
+            if (operation) return Ok();
+
+            return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
         }
     }
 }

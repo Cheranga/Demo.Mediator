@@ -1,4 +1,5 @@
 using FluentValidation;
+using Interesting.Mediator.DataAccess;
 using Interesting.Mediator.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,6 +30,7 @@ namespace Interesting.Mediator
         private void RegisterServices(IServiceCollection services)
         {
             services.AddSingleton<ICustomerService, CustomerService>();
+            services.AddSingleton<ICustomerRepository, CustomerRepository>();
         }
 
         private void RegisterValidators(IServiceCollection services)
@@ -44,10 +46,7 @@ namespace Interesting.Mediator
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
             app.UseHttpsRedirection();
 

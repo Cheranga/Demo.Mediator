@@ -9,11 +9,8 @@ namespace Interesting.Mediator.Validators
         {
             var instance = context.InstanceToValidate;
 
-            if (instance != null)
-            {
-                return true;
-            }
-            
+            if (instance != null) return true;
+
             result.Errors.Add(new ValidationFailure("", "Instance cannot be null"));
             return false;
         }
