@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Interesting.Mediator.DataAccess;
+using Interesting.Mediator.Exceptions;
 using Interesting.Mediator.Services.Messages;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -37,6 +38,9 @@ namespace Interesting.Mediator.Handlers
                 LastName = lastName,
                 Address = notification.Address
             };
+
+            logger.LogError("eDirectory user update handling error!");
+            throw new EDirectoryUserUpdateException(updateCommand);
 
             logger.LogInformation("EDirectory updates are done!");
             await repository.UpdateUserAsync(updateCommand);

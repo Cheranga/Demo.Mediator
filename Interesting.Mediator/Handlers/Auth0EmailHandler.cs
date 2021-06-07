@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Interesting.Mediator.Exceptions;
 using Interesting.Mediator.Services;
 using Interesting.Mediator.Services.Messages;
 using Interesting.Mediator.Services.Requests;
@@ -29,6 +30,9 @@ namespace Interesting.Mediator.Handlers
                 Id = $"auth0|{notification.CustomerId}",
                 Email = notification.NewEmail
             };
+
+            logger.LogError("Auth0 email update handling error!");
+            throw new Auth0UpdateUserException(auth0UserUpdateRequest);
 
             await auth0Service.UpdateUserEmailAsync(auth0UserUpdateRequest);
             
