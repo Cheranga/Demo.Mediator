@@ -3,9 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Interesting.Mediator.Core;
 using Interesting.Mediator.DataAccess;
+using Interesting.Mediator.Exceptions;
 using Interesting.Mediator.Services.Messages;
 using Interesting.Mediator.Services.Requests;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Interesting.Mediator.Handlers
 {
@@ -13,16 +15,17 @@ namespace Interesting.Mediator.Handlers
     {
         private readonly ICustomerRepository customerRepository;
         private readonly IMediator mediator;
+        private readonly ILogger<UpdateCustomerRequestHandler> logger;
 
-        public UpdateCustomerRequestHandler(ICustomerRepository customerRepository, IMediator mediator)
+        public UpdateCustomerRequestHandler(ICustomerRepository customerRepository, IMediator mediator, ILogger<UpdateCustomerRequestHandler> logger)
         {
             this.customerRepository = customerRepository;
             this.mediator = mediator;
+            this.logger = logger;
         }
         
         public async Task<Result<Customer>> Handle(UpdateCustomerRequest request, CancellationToken cancellationToken)
         {
-            // TODO: Discuss about the validator implementation and the pipeline for this update
             var getCustomerOperation = await GetCustomerAsync(request);
             if (!getCustomerOperation.Status)
             {
@@ -35,7 +38,11 @@ namespace Interesting.Mediator.Handlers
                 return Result<Customer>.Failure(updateCustomerOperation.ErrorCode, updateCustomerOperation.ValidationResult);
             }
 
-            await PublishEventsAsync(request, getCustomerOperation.Data, cancellationToken);
+            var publishEventsOperation = await PublishEventsAsync(request, getCustomerOperation.Data, cancellationToken);
+            if (!publishEventsOperation.Status)
+            {
+                return Result<Customer>.Failure(publishEventsOperation.ErrorCode, publishEventsOperation.ValidationResult);
+            }
 
             // TODO: Discuss 
             return await GetCustomerAsync(request);
@@ -71,7 +78,7 @@ namespace Interesting.Mediator.Handlers
             return customerRepository.UpdateCustomerAsync(updateCustomerCommand);
         }
 
-        private async Task PublishEventsAsync(UpdateCustomerRequest request, Customer customer, CancellationToken cancellationToken)
+        private async Task<Result> PublishEventsAsync(UpdateCustomerRequest request, Customer customer, CancellationToken cancellationToken)
         {
             var customerEmailUpdatedEvent = new CustomerEmailUpdatedEvent
             {
@@ -89,7 +96,29 @@ namespace Interesting.Mediator.Handlers
                 Name = request.Name
             };
 
-            await Task.WhenAll(mediator.Publish(customerEmailUpdatedEvent, cancellationToken), mediator.Publish(customerUpdatedEvent, cancellationToken));
+            // await Task.WhenAll(mediator.Publish(customerEmailUpdatedEvent, cancellationToken), mediator.Publish(customerUpdatedEvent, cancellationToken));
+            // return Result.Success();
+            
+            try
+            {
+                await Task.WhenAll(mediator.Publish(customerEmailUpdatedEvent, cancellationToken), mediator.Publish(customerUpdatedEvent, cancellationToken));
+                return Result.Success();
+            }
+            catch (Exception exception)
+            {
+                logger.LogError(exception, "Error occurred when publishing customer updated events");
+            
+                if (exception is Auth0UpdateUserException)
+                {
+                    return Result.Failure("AUTH0_USER_UPDATE_ERROR", "error occurred when updating the user");
+                }
+                if (exception is EDirectoryUserUpdateException)
+                {
+                    return Result.Failure("EDIRECTORY_USER_UPDATE_ERROR", "error occurred when updating the user");
+                }
+                
+                return Result.Failure("EVENT_CUSTOMER_UPDATES", "Error occurred when publishing customer updated events");
+            }
         }
     }
 }
