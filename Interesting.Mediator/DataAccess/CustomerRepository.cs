@@ -1,26 +1,27 @@
 using System;
 using System.Threading.Tasks;
+using Interesting.Mediator.Core;
 
 namespace Interesting.Mediator.DataAccess
 {
     public class CustomerRepository : ICustomerRepository
     {
-        public Task<bool> CreateCustomerAsync(CreateCustomerCommand command)
+        public Task<Result> CreateCustomerAsync(CreateCustomerCommand command)
         {
-            // TODO: create the customer
-            return Task.FromResult(true);
+            return Task.FromResult(Result.Success());
         }
 
-        public Task<Customer> GetCustomerByEmailAsync(string email)
+        public Task<Result<Customer>> GetCustomerByEmailAsync(string email)
         {
-            // TODO: get the customer
-            return Task.FromResult(new Customer
+            var customer = new Customer
             {
                 Id = Guid.NewGuid().ToString("N"),
                 Name = "Cheranga Hatangala",
                 Address = "Melbourne",
                 Email = "cheranga@gmail.com"
-            });
+            };
+            
+            return Task.FromResult(Result<Customer>.Success(customer));
         }
     }
 }

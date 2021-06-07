@@ -28,16 +28,21 @@ namespace Interesting.Mediator.Controllers
         {
             var validationResult = await getCustomerByEmailRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
+            {
                 // TODO: Return an error object
                 return new BadRequestResult();
-
-            var customer = await customerService.GetCustomerAsync(request);
-            if (customer != null)
-            {
-                return Ok(customer);
             }
 
-            return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            var operation = await customerService.GetCustomerAsync(request);
+            if (operation.Status)
+            {
+                return Ok(operation.Data);
+            }
+
+            return new ObjectResult(operation)
+            {
+                StatusCode = (int) (HttpStatusCode.InternalServerError)
+            };
         }
 
         [HttpPost]
@@ -45,13 +50,21 @@ namespace Interesting.Mediator.Controllers
         {
             var validationResult = await createCustomerRequestValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
+            {
                 // TODO: Return an error object
                 return new BadRequestResult();
-
+            }
+            
             var operation = await customerService.CreateCustomerAsync(request);
-            if (operation) return Ok();
+            if (operation.Status)
+            {
+                return Ok();
+            }
 
-            return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            return new ObjectResult(operation)
+            {
+                StatusCode = (int) (HttpStatusCode.InternalServerError)
+            };
         }
     }
 }

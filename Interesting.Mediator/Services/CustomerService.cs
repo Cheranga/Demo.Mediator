@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Interesting.Mediator.Core;
 using Interesting.Mediator.DataAccess;
 using Interesting.Mediator.Requests;
 
@@ -13,7 +14,7 @@ namespace Interesting.Mediator.Services
             this.customerRepository = customerRepository;
         }
 
-        public async Task<bool> CreateCustomerAsync(CreateCustomerRequest request)
+        public async Task<Result> CreateCustomerAsync(CreateCustomerRequest request)
         {
             var command = new CreateCustomerCommand
             {
@@ -25,7 +26,7 @@ namespace Interesting.Mediator.Services
             return result;
         }
 
-        public Task<Customer> GetCustomerAsync(GetCustomerByEmailRequest request)
+        public Task<Result<Customer>> GetCustomerAsync(GetCustomerByEmailRequest request)
         {
             return customerRepository.GetCustomerByEmailAsync(request.Email);
         }

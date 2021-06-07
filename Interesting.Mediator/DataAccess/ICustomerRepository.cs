@@ -1,10 +1,11 @@
 using System.Threading.Tasks;
+using Interesting.Mediator.Core;
 
 namespace Interesting.Mediator.DataAccess
 {
     public interface ICustomerRepository
     {
-        Task<bool> CreateCustomerAsync(CreateCustomerCommand command);
-        Task<Customer> GetCustomerByEmailAsync(string email);
+        Task<Result> CreateCustomerAsync(CreateCustomerCommand command);
+        Task<Result<Customer>> GetCustomerByEmailAsync(string email);
     }
 }
