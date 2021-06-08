@@ -11,7 +11,7 @@ namespace Interesting.Mediator.DataAccess
         {
             // Simulate eDirectory stuff here
             await Task.Delay(TimeSpan.FromSeconds(2));
-            return Result.Success();
+            return Result.Failure("EDIRECTORY_UPDATE_ERROR", "error occurred when updating eDirectory");
         }
     }
 }

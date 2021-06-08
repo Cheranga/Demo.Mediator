@@ -116,30 +116,6 @@ namespace Interesting.Mediator.Handlers
             
             await asyncPublisher.Publish(customerUpdatedEvent, PublishStrategy.ParallelNoWait, cancellationToken);
             return Result.Success();
-
-            // await Task.WhenAll(mediator.Publish(customerEmailUpdatedEvent, cancellationToken), mediator.Publish(customerUpdatedEvent, cancellationToken));
-            // return Result.Success();
-
-            // try
-            // {
-            //     await Task.WhenAll(mediator.Publish(customerEmailUpdatedEvent, cancellationToken), mediator.Publish(customerUpdatedEvent, cancellationToken));
-            //     return Result.Success();
-            // }
-            // catch (Exception exception)
-            // {
-            //     logger.LogError(exception, "Error occurred when publishing customer updated events");
-            //
-            //     if (exception is Auth0UpdateUserException)
-            //     {
-            //         return Result.Failure("AUTH0_USER_UPDATE_ERROR", "error occurred when updating the user");
-            //     }
-            //     if (exception is EDirectoryUserUpdateException)
-            //     {
-            //         return Result.Failure("EDIRECTORY_USER_UPDATE_ERROR", "error occurred when updating the user");
-            //     }
-            //     
-            //     return Result.Failure("EVENT_CUSTOMER_UPDATES", "Error occurred when publishing customer updated events");
-            // }
         }
 
         private async Task<Result> HandleCustomerEmailUpdatesAsync(CustomerEmailUpdatedEvent updatedEvent, Customer customer, CancellationToken cancellationToken)
@@ -149,39 +125,10 @@ namespace Interesting.Mediator.Handlers
                 await mediator.Publish(updatedEvent, cancellationToken);
                 return Result.Success();
             }
-            catch (Auth0UpdateUserException exception)
-            {
-                await RevertEDirectoryChangesAsync(customer, cancellationToken);
-                return Result.Failure("AUTH0_UPDATE_ERROR", "error occurred when updating Auth0");
-            }
-            catch (EDirectoryUserUpdateException exception)
-            {
-                await RevertAuth0ChangesAsync(customer, cancellationToken);
-                return Result.Failure("EDIRECTORY_UPDATE_ERROR", "error occurred when updating eDirectory");
-            }
             catch (Exception exception)
             {
                 return Result.Failure("EMAIL_UPDATE_ERROR", "Error occurred when updating the email");
             }
-            // catch (AggregateException exception)
-            // {
-            //     exception.Handle(ex =>
-            //     {
-            //         if (ex is Auth0UpdateUserException)
-            //         {
-            //             RevertEDirectoryChangesAsync(customer, cancellationToken).Wait(cancellationToken);
-            //         }
-            //
-            //         if (ex is EDirectoryUserUpdateException)
-            //         {
-            //             RevertAuth0ChangesAsync(customer, cancellationToken).Wait(cancellationToken);
-            //         }
-            //
-            //         return true;
-            //     });
-            // }
-
-            return Result.Failure("EMAIL_UPDATE_ERROR", "Error occurred when updating the email");
         }
 
         private async Task RevertAuth0ChangesAsync(Customer customer, CancellationToken cancellationToken)

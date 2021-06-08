@@ -40,8 +40,8 @@ namespace Interesting.Mediator.Handlers
                 // Address = notification.Address
             };
 
-            // logger.LogError("eDirectory user update handling error!");
-            // throw new EDirectoryUserUpdateException(updateCommand);
+            logger.LogError("eDirectory user update handling error!");
+            throw new EDirectoryUserUpdateException(updateCommand);
 
             logger.LogInformation("EDirectory updates are done!");
             await repository.UpdateUserAsync(updateCommand);

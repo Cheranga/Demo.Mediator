@@ -11,6 +11,8 @@
 
     <ItemGroup>
       <Compile Remove="Exceptions\UpdateCustomerExceptionHandler.cs" />
+      <Compile Remove="Handlers\EDirectoryUpdateHandler.cs" />
+      <Compile Remove="Handlers\Auth0EmailHandler.cs" />
     </ItemGroup>
 
 
