@@ -95,9 +95,6 @@ namespace Interesting.Mediator.Handlers
                 Email = request.Email,
                 Name = request.Name
             };
-
-            // await Task.WhenAll(mediator.Publish(customerEmailUpdatedEvent, cancellationToken), mediator.Publish(customerUpdatedEvent, cancellationToken));
-            // return Result.Success();
             
             try
             {
