@@ -31,8 +31,8 @@ namespace Interesting.Mediator.Handlers
                 Email = notification.NewEmail
             };
 
-            // logger.LogError("Auth0 email update handling error!");
-            // throw new Auth0UpdateUserException(auth0UserUpdateRequest);
+            logger.LogError("Auth0 email update handling error!");
+            throw new Auth0UpdateUserException(auth0UserUpdateRequest);
 
             await auth0Service.UpdateUserEmailAsync(auth0UserUpdateRequest);
             

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Interesting.Mediator.Core;
@@ -107,7 +108,12 @@ namespace Interesting.Mediator.Handlers
                 Name = request.Name
             };
 
-            await mediator.Publish(customerEmailUpdatedEvent, cancellationToken);
+            var emailUpdatedOperation = await HandleCustomerEmailUpdatesAsync(customerEmailUpdatedEvent, customer, cancellationToken);
+            if (!emailUpdatedOperation.Status)
+            {
+                return emailUpdatedOperation;
+            }
+            
             await asyncPublisher.Publish(customerUpdatedEvent, PublishStrategy.ParallelNoWait, cancellationToken);
             return Result.Success();
 
@@ -134,6 +140,57 @@ namespace Interesting.Mediator.Handlers
             //     
             //     return Result.Failure("EVENT_CUSTOMER_UPDATES", "Error occurred when publishing customer updated events");
             // }
+        }
+
+        private async Task<Result> HandleCustomerEmailUpdatesAsync(CustomerEmailUpdatedEvent updatedEvent, Customer customer, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await asyncPublisher.Publish(updatedEvent, PublishStrategy.SyncContinueOnException, cancellationToken);
+                // await mediator.Publish(updatedEvent, cancellationToken);
+                return Result.Success();
+            }
+            catch (AggregateException exception)
+            {
+                exception.Handle(ex =>
+                {
+                    if (ex is Auth0UpdateUserException)
+                    {
+                        RevertEDirectoryChangesAsync(customer, cancellationToken).Wait(cancellationToken);
+                    }
+
+                    if (ex is EDirectoryUserUpdateException)
+                    {
+                        RevertAuth0ChangesAsync(customer, cancellationToken).Wait(cancellationToken);
+                    }
+
+                    return true;
+                });
+            }
+
+            return Result.Failure("EMAIL_UPDATE_ERROR", "Error occurred when updating the email");
+        }
+
+        private async Task RevertAuth0ChangesAsync(Customer customer, CancellationToken cancellationToken)
+        {
+            var revertEvent = new RevertAuth0UserUpdatesEvent
+            {
+                Id = customer.Id,
+                Email = customer.Email
+            };
+
+            await mediator.Publish(revertEvent, cancellationToken);
+        }
+
+        private async Task RevertEDirectoryChangesAsync(Customer customer, CancellationToken cancellationToken)
+        {
+            var revertEvent = new RevertEDirectoryUpdatesEvent
+            {
+                Id = customer.Id,
+                Email = customer.Email
+            };
+
+            await mediator.Publish(revertEvent, cancellationToken);
         }
     }
 }
