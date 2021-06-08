@@ -29,7 +29,7 @@ namespace Interesting.Mediator.Handlers
             // var nameParts = notification.Name?.Split(new[] {" "}, StringSplitOptions.RemoveEmptyEntries);
             // var firstName = nameParts?.FirstOrDefault();
             // var lastName = nameParts?.Skip(1)?.FirstOrDefault();
-
+            logger.LogInformation("eDirectory update handling started!");
             var updateCommand = new UpdateEDirectoryUserCommand
             {
                 Email = notification.NewEmail

@@ -23,6 +23,7 @@ namespace Interesting.Mediator.Handlers
         
         public async Task Handle(CustomerEmailUpdatedEvent notification, CancellationToken cancellationToken)
         {
+            logger.LogInformation("Auth0 email handling started!");
             await Task.Delay(TimeSpan.FromSeconds(2));
 
             var auth0UserUpdateRequest = new Auth0UserUpdateRequest

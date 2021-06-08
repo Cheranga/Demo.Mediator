@@ -146,27 +146,40 @@ namespace Interesting.Mediator.Handlers
         {
             try
             {
-                await asyncPublisher.Publish(updatedEvent, PublishStrategy.SyncContinueOnException, cancellationToken);
-                // await mediator.Publish(updatedEvent, cancellationToken);
+                await mediator.Publish(updatedEvent, cancellationToken);
                 return Result.Success();
             }
-            catch (AggregateException exception)
+            catch (Auth0UpdateUserException exception)
             {
-                exception.Handle(ex =>
-                {
-                    if (ex is Auth0UpdateUserException)
-                    {
-                        RevertEDirectoryChangesAsync(customer, cancellationToken).Wait(cancellationToken);
-                    }
-
-                    if (ex is EDirectoryUserUpdateException)
-                    {
-                        RevertAuth0ChangesAsync(customer, cancellationToken).Wait(cancellationToken);
-                    }
-
-                    return true;
-                });
+                await RevertEDirectoryChangesAsync(customer, cancellationToken);
+                return Result.Failure("AUTH0_UPDATE_ERROR", "error occurred when updating Auth0");
             }
+            catch (EDirectoryUserUpdateException exception)
+            {
+                await RevertAuth0ChangesAsync(customer, cancellationToken);
+                return Result.Failure("EDIRECTORY_UPDATE_ERROR", "error occurred when updating eDirectory");
+            }
+            catch (Exception exception)
+            {
+                return Result.Failure("EMAIL_UPDATE_ERROR", "Error occurred when updating the email");
+            }
+            // catch (AggregateException exception)
+            // {
+            //     exception.Handle(ex =>
+            //     {
+            //         if (ex is Auth0UpdateUserException)
+            //         {
+            //             RevertEDirectoryChangesAsync(customer, cancellationToken).Wait(cancellationToken);
+            //         }
+            //
+            //         if (ex is EDirectoryUserUpdateException)
+            //         {
+            //             RevertAuth0ChangesAsync(customer, cancellationToken).Wait(cancellationToken);
+            //         }
+            //
+            //         return true;
+            //     });
+            // }
 
             return Result.Failure("EMAIL_UPDATE_ERROR", "Error occurred when updating the email");
         }
