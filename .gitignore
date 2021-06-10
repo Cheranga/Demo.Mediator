@@ -6,3 +6,23 @@ Interesting.Mediator/bin/Debug/netcoreapp3.1/
 Interesting.Mediator/obj/Debug/netcoreapp3.1/
 
 Interesting.Mediator/obj/
+
+Coles.Customers.Application/bin/Debug/netcoreapp3.1/
+
+Coles.Customers.Application/obj/
+
+Coles.Customers.Domain/obj/Debug/netcoreapp3.1/
+
+Coles.Customers.Infrastructure.DataAccess/bin/Debug/netcoreapp3.1/
+
+Coles.Customers.Infrastructure.DataAccess/obj/
+
+Coles.Customers.Infrastructure.Http/obj/Debug/netcoreapp3.1/
+
+Coles.Customers.Infrastructure.Http/obj/
+
+Coles.Customers.Infrastructure.Http/bin/Debug/netcoreapp3.1/
+
+Coles.Customers.Domain/obj/
+
+Coles.Customers.Domain/bin/Debug/netcoreapp3.1/
