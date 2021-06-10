@@ -14,14 +14,12 @@ namespace Interesting.Mediator.Handlers
 {
     public class UpdateCustomerRequestHandler : IRequestHandler<UpdateCustomerRequest, Result<Customer>>
     {
-        private readonly ICustomerRepository customerRepository;
         private readonly IMediator mediator;
         private readonly IAsyncPublisher asyncPublisher;
         private readonly ILogger<UpdateCustomerRequestHandler> logger;
 
-        public UpdateCustomerRequestHandler(ICustomerRepository customerRepository, IMediator mediator, IAsyncPublisher asyncPublisher, ILogger<UpdateCustomerRequestHandler> logger)
+        public UpdateCustomerRequestHandler(IMediator mediator, IAsyncPublisher asyncPublisher, ILogger<UpdateCustomerRequestHandler> logger)
         {
-            this.customerRepository = customerRepository;
             this.mediator = mediator;
             this.asyncPublisher = asyncPublisher;
             this.logger = logger;
@@ -60,7 +58,12 @@ namespace Interesting.Mediator.Handlers
 
         private async Task<Result<Customer>> GetCustomerAsync(UpdateCustomerRequest request)
         {
-            var getCustomerOperation = await customerRepository.GetCustomerByEmailAsync(request.Email);
+            var getCustomerByEmailRequest = new GetCustomerByEmailRequest
+            {
+                Email = request.Email
+            };
+
+            var getCustomerOperation = await mediator.Send(getCustomerByEmailRequest);
             if (!getCustomerOperation.Status)
             {
                 return Result<Customer>.Failure(getCustomerOperation.ErrorCode, getCustomerOperation.ValidationResult);
@@ -85,7 +88,7 @@ namespace Interesting.Mediator.Handlers
                 Email = request.Email
             };
 
-            return customerRepository.UpdateCustomerAsync(updateCustomerCommand);
+            return mediator.Send(updateCustomerCommand);
         }
 
         private async Task<Result> PublishEventsAsync(UpdateCustomerRequest request, Customer customer, CancellationToken cancellationToken)
