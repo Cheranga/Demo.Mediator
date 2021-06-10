@@ -13,9 +13,10 @@ namespace Coles.Customers.Infrastructure.DataAccess.Commands
         {
         }
 
-        public Task<Result> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            return Result.Success();
         }
     }
 }

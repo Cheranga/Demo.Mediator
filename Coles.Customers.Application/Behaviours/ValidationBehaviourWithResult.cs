@@ -22,9 +22,11 @@ namespace Coles.Customers.Application.Behaviours
         {
             if (validator == null)
             {
+                logger.LogWarning("No validator found for {RequestType}", typeof(TRequest).Name);
                 return await next();
             }
 
+            logger.LogInformation("Validation started for {RequestType}", typeof(TRequest).Name);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
             {
@@ -32,6 +34,7 @@ namespace Coles.Customers.Application.Behaviours
                 return Result<TResponse>.Failure("INVALID_REQUEST", validationResult);
             }
 
+            logger.LogInformation("Validation finished for {RequestType}", typeof(TRequest).Name);
             return await next();
         }
     }

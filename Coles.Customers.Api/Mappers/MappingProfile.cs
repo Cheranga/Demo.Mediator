@@ -9,6 +9,7 @@ namespace Coles.Customers.Api.Mappers
         public MappingProfile()
         {
             CreateMap<GetCustomerByEmailRequestDto, GetCustomerByEmailRequest>();
+            CreateMap<CreateCustomerRequestDto, CreateCustomerRequest>();
         }
     }
 }

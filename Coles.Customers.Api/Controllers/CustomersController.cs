@@ -33,14 +33,18 @@ namespace Coles.Customers.Api.Controllers
             return Problem(operation.ErrorCode);
         }
         
-        // [HttpPost("create")]
-        // public async Task<IActionResult> CreateCustomerAsync([FromBody] CreateCustomerRequest request)
-        // {
-        //     var createCustomerRequest = mapper.Map<CreateCustomerRequest>(request);
-        //     var operation = await customerService.CreateCustomerAsync(createCustomerRequest);
-        //
-        //     // TODO: Return the appropriate response to the caller
-        //     return Ok();
-        // }
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateCustomerAsync([FromBody] CreateCustomerRequest request)
+        {
+            var createCustomerRequest = mapper.Map<CreateCustomerRequest>(request);
+            var operation = await customerService.CreateCustomerAsync(createCustomerRequest);
+        
+            if (operation.Status)
+            {
+                return Ok();
+            }
+
+            return Problem(operation.ErrorCode);
+        }
     }
 }
