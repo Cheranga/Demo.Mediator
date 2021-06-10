@@ -1,11 +1,10 @@
-using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Coles.Customers.Application.Requests;
 using Coles.Customers.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Interesting.Mediator.Controllers
+namespace Coles.Customers.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -30,14 +29,14 @@ namespace Interesting.Mediator.Controllers
             return Ok();
         }
         
-        [HttpPost("create")]
-        public async Task<IActionResult> CreateCustomerAsync([FromBody] CreateCustomerRequest request)
-        {
-            var createCustomerRequest = mapper.Map<CreateCustomerRequest>(request);
-            var operation = await customerService.CreateCustomerAsync(createCustomerRequest);
-
-            // TODO: Return the appropriate response to the caller
-            return Ok();
-        }
+        // [HttpPost("create")]
+        // public async Task<IActionResult> CreateCustomerAsync([FromBody] CreateCustomerRequest request)
+        // {
+        //     var createCustomerRequest = mapper.Map<CreateCustomerRequest>(request);
+        //     var operation = await customerService.CreateCustomerAsync(createCustomerRequest);
+        //
+        //     // TODO: Return the appropriate response to the caller
+        //     return Ok();
+        // }
     }
 }

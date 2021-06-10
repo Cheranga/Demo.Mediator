@@ -1,7 +1,5 @@
 using System.Net;
 using System.Threading.Tasks;
-using FluentValidation;
-using Interesting.Mediator.Services;
 using Interesting.Mediator.Services.Requests;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

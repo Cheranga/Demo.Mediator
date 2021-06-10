@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Coles.Customers.Application.Queries;
@@ -14,9 +15,19 @@ namespace Coles.Customers.Infrastructure.DataAccess.Queries
         {
         }
 
-        public Task<Result<Customer>> Handle(GetCustomerByEmailQuery request, CancellationToken cancellationToken)
+        public async Task<Result<Customer>> Handle(GetCustomerByEmailQuery request, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            await Task.Delay(TimeSpan.FromSeconds(2));
+
+            var customer = new Customer
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                Address = "Melbourne",
+                Email = request.Email,
+                Name = "Cheranga"
+            };
+
+            return Result<Customer>.Success(customer);
         }
     }
 }

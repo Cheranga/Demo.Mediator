@@ -1,10 +1,8 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Interesting.Mediator.Core;
 using Interesting.Mediator.DataAccess;
-using Interesting.Mediator.Exceptions;
 using Interesting.Mediator.Publisher;
 using Interesting.Mediator.Services.Messages;
 using Interesting.Mediator.Services.Requests;

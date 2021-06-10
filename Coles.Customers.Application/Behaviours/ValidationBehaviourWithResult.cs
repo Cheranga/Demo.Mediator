@@ -1,10 +1,11 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Coles.Customers.Domain.Core;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Coles.Customers.Domain.Core
+namespace Coles.Customers.Application.Behaviours
 {
     public class ValidationBehaviourWithResult<TRequest, TResponse> : IPipelineBehavior<TRequest, Result<TResponse>>
     {

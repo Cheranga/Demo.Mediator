@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using FluentValidation;
 using Interesting.Mediator.Core;
 using Interesting.Mediator.DataAccess;
 using Interesting.Mediator.Services.Requests;

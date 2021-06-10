@@ -1,16 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Coles.Customers.Application;
+using Coles.Customers.Application.Services;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace Coles.Customers.Api
 {
@@ -35,8 +31,54 @@ namespace Coles.Customers.Api
         {
             // TODO: Register application services
 
+            RegisterMediators(services);
+            RegisterValidators(services);
+            RegisterMappers(services);
+            Infrastructure.DataAccess.Bootstrapper.RegisterDataAccess(services, Configuration);
             services.RegisterApplicationServices();
-            
+
+
+            RegisterApiServices(services);
+
+        }
+
+        private void RegisterMappers(IServiceCollection services)
+        {
+            var assemblies = new[]
+            {
+                typeof(Startup).Assembly,
+                typeof(Bootstrapper).Assembly
+            };
+
+            services.AddAutoMapper(assemblies);
+        }
+
+        private void RegisterApiServices(IServiceCollection services)
+        {
+            services.AddSingleton<ICustomerService, CustomerService>();
+        }
+
+        private void RegisterMediators(IServiceCollection services)
+        {
+            var assemblies = new[]
+            {
+                typeof(Startup).Assembly,
+                typeof(Bootstrapper).Assembly,
+                typeof(Infrastructure.DataAccess.Bootstrapper).Assembly
+            };
+
+            services.AddMediatR(assemblies);
+        }
+
+        private void RegisterValidators(IServiceCollection services)
+        {
+            var assemblies = new[]
+            {
+                typeof(Startup).Assembly,
+                typeof(Bootstrapper).Assembly
+            };
+
+            services.AddValidatorsFromAssemblies(assemblies,ServiceLifetime.Transient);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
