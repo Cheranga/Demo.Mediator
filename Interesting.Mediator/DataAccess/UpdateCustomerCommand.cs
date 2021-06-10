@@ -1,6 +1,9 @@
+using Interesting.Mediator.Core;
+using MediatR;
+
 namespace Interesting.Mediator.DataAccess
 {
-    public class UpdateCustomerCommand
+    public class UpdateCustomerCommand : IRequest<Result>
     {
         public string Id { get; set; }
         public string Email { get; set; }
