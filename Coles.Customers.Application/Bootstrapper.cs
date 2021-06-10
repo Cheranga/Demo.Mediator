@@ -13,9 +13,9 @@ namespace Coles.Customers.Application
         public static void RegisterApplicationServices(this IServiceCollection services)
         {
             // TODO: Register application services
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LogPerformanceBehaviour<,>));
-            services.AddTransient<IPipelineBehavior<GetCustomerByEmailRequest, Result<Customer>>, ValidationBehaviourWithResult<GetCustomerByEmailRequest, Customer>>();
-            services.AddTransient<IPipelineBehavior<GetCustomerByEmailQuery, Result<Customer>>, ValidationBehaviourWithResult<GetCustomerByEmailQuery, Customer>>();
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LogPerformanceBehaviour<,>));
+            services.AddScoped<IPipelineBehavior<GetCustomerByEmailRequest, Result<Customer>>, ValidationBehaviourWithResult<GetCustomerByEmailRequest, Customer>>();
+            services.AddScoped<IPipelineBehavior<GetCustomerByEmailQuery, Result<Customer>>, ValidationBehaviourWithResult<GetCustomerByEmailQuery, Customer>>();
         }
     }
 }

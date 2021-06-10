@@ -25,8 +25,12 @@ namespace Coles.Customers.Api.Controllers
             var getCustomerByEmailRequest = mapper.Map<GetCustomerByEmailRequest>(request);
             var operation = await customerService.GetCustomerAsync(getCustomerByEmailRequest);
 
-            // TODO: Return the appropriate response to the caller
-            return Ok();
+            if (operation.Status)
+            {
+                return Ok(operation.Data);
+            }
+
+            return Problem(operation.ErrorCode);
         }
         
         // [HttpPost("create")]

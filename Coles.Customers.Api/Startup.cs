@@ -55,7 +55,7 @@ namespace Coles.Customers.Api
 
         private void RegisterApiServices(IServiceCollection services)
         {
-            services.AddSingleton<ICustomerService, CustomerService>();
+            services.AddScoped<ICustomerService, CustomerService>();
         }
 
         private void RegisterMediators(IServiceCollection services)
@@ -67,7 +67,10 @@ namespace Coles.Customers.Api
                 typeof(Infrastructure.DataAccess.Bootstrapper).Assembly
             };
 
-            services.AddMediatR(assemblies);
+            services.AddMediatR(assemblies, configuration =>
+            {
+                configuration.AsScoped();
+            });
         }
 
         private void RegisterValidators(IServiceCollection services)
@@ -78,7 +81,7 @@ namespace Coles.Customers.Api
                 typeof(Bootstrapper).Assembly
             };
 
-            services.AddValidatorsFromAssemblies(assemblies,ServiceLifetime.Transient);
+            services.AddValidatorsFromAssemblies(assemblies);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

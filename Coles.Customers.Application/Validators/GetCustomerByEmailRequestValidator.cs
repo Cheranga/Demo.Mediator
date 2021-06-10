@@ -7,7 +7,7 @@ namespace Coles.Customers.Application.Validators
     {
         public GetCustomerByEmailRequestValidator()
         {
-            RuleFor(x => x.Email).NotNull().NotEmpty();
+            RuleFor(x => x.Email).NotNull().NotEmpty().EmailAddress();
         }
     }
 }
