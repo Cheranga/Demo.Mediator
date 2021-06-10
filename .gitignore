@@ -26,3 +26,7 @@ Coles.Customers.Infrastructure.Http/bin/Debug/netcoreapp3.1/
 Coles.Customers.Domain/obj/
 
 Coles.Customers.Domain/bin/Debug/netcoreapp3.1/
+
+Coles.Customers.Api/bin/Debug/netcoreapp3.1/
+
+Coles.Customers.Api/obj/

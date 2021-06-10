@@ -1,1 +1,6 @@
 Interesting.Mediator
+
+```mermaid
+sequenceDiagram
+
+```
